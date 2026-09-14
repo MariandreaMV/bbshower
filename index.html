@@ -126,6 +126,47 @@
     .hero-image-wrap{ border-radius:14px; max-height:82svh; }
   }
 
+  /* ---------- entrance + scroll reveal animations ---------- */
+  @keyframes heroIn{
+    0%{ opacity:0; transform:scale(0.94) translateY(18px); }
+    100%{ opacity:1; transform:scale(1) translateY(0); }
+  }
+  @keyframes cueIn{
+    0%{ opacity:0; }
+    100%{ opacity:1; }
+  }
+  .hero-image-wrap{
+    animation: heroIn 0.9s cubic-bezier(.22,.9,.32,1) both;
+  }
+  .scroll-cue{
+    animation: cueIn 1s ease 0.7s both, bob 2.4s ease-in-out 1.2s infinite;
+  }
+
+  .reveal{
+    opacity:0;
+    transform:translateY(22px);
+    transition: opacity 0.7s cubic-bezier(.22,.9,.32,1), transform 0.7s cubic-bezier(.22,.9,.32,1);
+  }
+  .reveal.is-visible{
+    opacity:1;
+    transform:translateY(0);
+  }
+  .date-box{ transition: transform 0.35s ease, box-shadow 0.35s ease; }
+  .date-box:hover{ transform:translateY(-4px); box-shadow:0 18px 36px rgba(92,107,76,0.14); }
+  .raffle-box{ transition: transform 0.35s ease; }
+  .raffle-box .icon{ display:inline-block; animation: ticketWiggle 3.2s ease-in-out infinite; }
+  @keyframes ticketWiggle{
+    0%,100%{ transform:rotate(0deg); }
+    10%{ transform:rotate(-8deg); }
+    20%{ transform:rotate(6deg); }
+    30%{ transform:rotate(0deg); }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero-image-wrap, .scroll-cue, .reveal{ animation:none !important; transition:none !important; opacity:1 !important; transform:none !important; }
+    .raffle-box .icon{ animation:none !important; }
+  }
+
   /* ---------- shared section styling ---------- */
   .card{
     max-width:560px;
@@ -328,7 +369,7 @@
 
 <!-- DATE -->
 <section id="date">
-  <div class="card">
+  <div class="card reveal">
     <div class="kicker">Save the date</div>
     <div class="date-box">
       <span class="weekday">SATURDAY</span>
@@ -341,7 +382,7 @@
 
 <!-- LOCATION -->
 <section id="location">
-  <div class="card">
+  <div class="card reveal">
     <div class="kicker">Where to find us</div>
     <h2 class="title">73 Echotango Rd</h2>
     <p class="addr">Okatie, SC 29909, USA</p>
@@ -359,7 +400,7 @@
 
 <!-- HOST -->
 <section id="host">
-  <div class="card">
+  <div class="card reveal">
     <div class="host-circle" style="font-size:24px; letter-spacing:0.02em;">K&amp;B</div>
     <div class="kicker">Hosted with love by</div>
     <h2 class="title">Karen &amp; Baylor</h2>
@@ -371,7 +412,7 @@
 
 <!-- RAFFLE -->
 <section id="raffle">
-  <div class="card">
+  <div class="card reveal">
     <div class="kicker">A little extra fun</div>
     <h2 class="title">Diapers &amp; Wipes Raffle!</h2>
     <p class="body-text">Bring a pack of diapers or baby wipes to enter our special raffle — every pack you bring is another entry toward a fun prize, and every pack helps stock up the nursery.</p>
@@ -384,7 +425,7 @@
 
 <!-- REGISTRY -->
 <section id="registry">
-  <div class="card">
+  <div class="card reveal">
     <div class="kicker">A little wish list</div>
     <h2 class="title">Gift Registry</h2>
     <p class="body-text">If you'd like to spoil the wild one on the way, here's where we've registered.</p>
@@ -411,6 +452,18 @@
     });
   }, {threshold:0.5});
   sections.forEach(s=>obs.observe(s));
+
+  // reveal-on-scroll for card content
+  const reveals = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        e.target.classList.add('is-visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, {threshold:0.2});
+  reveals.forEach(r=>revealObs.observe(r));
 </script>
 
 </body>
